@@ -16,29 +16,29 @@ class LocalTransactionLoader {
 
 void main() {
   test("test_init_doesNotLoadAnyTransactions", () {
-    final client = TransactionStoreSpy();
-    final sut = LocalTransactionLoader(client);
+    final store = TransactionStoreSpy();
+    final sut = LocalTransactionLoader(store);
 
-    expect(client.requestCallCount, 0);
+    expect(store.requestCallCount, 0);
   });
 
   test("test_load_requestLoadTransactions", () {
-    final client = TransactionStoreSpy();
-    final sut = LocalTransactionLoader(client);
+    final store = TransactionStoreSpy();
+    final sut = LocalTransactionLoader(store);
 
     sut.load();
 
-    expect(client.requestCallCount, 1);
+    expect(store.requestCallCount, 1);
   });
 
   test("test_loadTwice_requestLoadTransactionsTwice", () {
-    final client = TransactionStoreSpy();
-    final sut = LocalTransactionLoader(client);
+    final store = TransactionStoreSpy();
+    final sut = LocalTransactionLoader(store);
 
     sut.load();
     sut.load();
 
-    expect(client.requestCallCount, 2);
+    expect(store.requestCallCount, 2);
   });
 }
 
