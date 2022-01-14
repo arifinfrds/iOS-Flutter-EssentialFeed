@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tuple/tuple.dart';
 
 mixin TransactionStore {
   void loadTransactions();
@@ -16,15 +17,16 @@ class LocalTransactionLoader {
 
 void main() {
   test("test_init_doesNotLoadAnyTransactions", () {
-    final store = TransactionStoreSpy();
-    final sut = LocalTransactionLoader(store);
+    final tuple = makeSUT();
+    final store = tuple.item2;
 
     expect(store.requestCallCount, 0);
   });
 
   test("test_load_requestLoadTransactions", () {
-    final store = TransactionStoreSpy();
-    final sut = LocalTransactionLoader(store);
+    final tuple = makeSUT();
+    final sut = tuple.item1;
+    final store = tuple.item2;
 
     sut.load();
 
@@ -32,14 +34,21 @@ void main() {
   });
 
   test("test_loadTwice_requestLoadTransactionsTwice", () {
-    final store = TransactionStoreSpy();
-    final sut = LocalTransactionLoader(store);
+    final tuple = makeSUT();
+    final sut = tuple.item1;
+    final store = tuple.item2;
 
     sut.load();
     sut.load();
 
     expect(store.requestCallCount, 2);
   });
+}
+
+Tuple2<LocalTransactionLoader, TransactionStoreSpy> makeSUT() {
+  final store = TransactionStoreSpy();
+  final sut = LocalTransactionLoader(store);
+  return Tuple2(sut, store);
 }
 
 class TransactionStoreSpy with TransactionStore {
