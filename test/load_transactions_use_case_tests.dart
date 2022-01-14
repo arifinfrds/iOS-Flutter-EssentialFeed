@@ -30,6 +30,16 @@ void main() {
 
     expect(client.requestCallCount, 1);
   });
+
+  test("test_loadTwice_requestLoadTransactionsTwice", () {
+    final client = TransactionStoreSpy();
+    final sut = LocalTransactionLoader(client);
+
+    sut.load();
+    sut.load();
+
+    expect(client.requestCallCount, 2);
+  });
 }
 
 class TransactionStoreSpy with TransactionStore {
