@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tuple/tuple.dart';
 
-mixin TransactionStore {
+abstract class TransactionStore {
   void loadTransactions();
 }
 
@@ -51,7 +51,7 @@ Tuple2<LocalTransactionLoader, TransactionStoreSpy> _makeSUT() {
   return Tuple2(sut, store);
 }
 
-class TransactionStoreSpy with TransactionStore {
+class TransactionStoreSpy implements TransactionStore {
   int requestCallCount = 0;
 
   @override
