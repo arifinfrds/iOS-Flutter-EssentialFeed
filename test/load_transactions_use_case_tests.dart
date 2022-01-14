@@ -17,14 +17,14 @@ class LocalTransactionLoader {
 
 void main() {
   test("test_init_doesNotLoadAnyTransactions", () {
-    final tuple = makeSUT();
+    final tuple = _makeSUT();
     final store = tuple.item2;
 
     expect(store.requestCallCount, 0);
   });
 
   test("test_load_requestLoadTransactions", () {
-    final tuple = makeSUT();
+    final tuple = _makeSUT();
     final sut = tuple.item1;
     final store = tuple.item2;
 
@@ -34,7 +34,7 @@ void main() {
   });
 
   test("test_loadTwice_requestLoadTransactionsTwice", () {
-    final tuple = makeSUT();
+    final tuple = _makeSUT();
     final sut = tuple.item1;
     final store = tuple.item2;
 
@@ -45,7 +45,7 @@ void main() {
   });
 }
 
-Tuple2<LocalTransactionLoader, TransactionStoreSpy> makeSUT() {
+Tuple2<LocalTransactionLoader, TransactionStoreSpy> _makeSUT() {
   final store = TransactionStoreSpy();
   final sut = LocalTransactionLoader(store);
   return Tuple2(sut, store);
