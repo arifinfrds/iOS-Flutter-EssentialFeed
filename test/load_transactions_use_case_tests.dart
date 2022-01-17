@@ -95,14 +95,7 @@ class TransactionStoreStub implements TransactionStore {
 
   @override
   Result<List<Transaction>, TransactionLoaderError> loadTransactions() {
-    return _result.when(
-        success: (transactions) {
-          return Result.success(transactions);
-        },
-        failure: (error) {
-          return Result.failure(TransactionLoaderError.notFound);
-        }
-    );
+    return _result;
   }
 }
 
