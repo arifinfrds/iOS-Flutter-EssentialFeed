@@ -70,6 +70,20 @@ void main() {
 
     expect(capturedErrors, [ TransactionLoaderError.notFound ]);
   });
+  
+  test("test_load_succeedsWithEmptyTransactions", () {
+    final store = TransactionStoreStub(Result.success([]));
+    final sut = LocalTransactionLoader(store);
+
+    final result = sut.load();
+
+    result.when(success: (transactions) {
+      expect(transactions.isEmpty, true);
+    }, failure: (error) {
+      assert(false, "Expect to complete with success, got " + error.toString() + "instead.");
+    });
+  });
+
 }
 
 Tuple2<LocalTransactionLoader, TransactionStoreSpy> _makeSUT() {
