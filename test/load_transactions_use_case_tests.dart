@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:simple_result/simple_result.dart';
 import 'package:tuple/tuple.dart';
 
-class Transaction { }
+class Transaction {}
 
 abstract class TransactionStore {
   Result<List<Transaction>, TransactionLoaderError> loadTransactions();
@@ -44,8 +44,7 @@ void main() {
     sut.load();
     sut.load();
 
-    expect(store.messages,
-        [TransactionStoreSpyMessage.load, TransactionStoreSpyMessage.load]);
+    expect(store.messages, [TransactionStoreSpyMessage.load, TransactionStoreSpyMessage.load]);
   });
 
   test("test_load_deliversErrorOnLoadTransactionsError", () {
@@ -61,9 +60,9 @@ void main() {
       capturedErrors.add(error);
     });
 
-    expect(capturedErrors, [ TransactionLoaderError.unknown ]);
+    expect(capturedErrors, [TransactionLoaderError.unknown]);
   });
-  
+
   test("test_load_succeedsWithEmptyTransactions", () {
     final store = TransactionStoreStub(Result.success([]));
     final sut = LocalTransactionLoader(store);
@@ -121,6 +120,4 @@ class TransactionStoreStub implements TransactionStore {
 
 enum TransactionStoreSpyMessage { load }
 
-enum TransactionLoaderError {
-  unknown
-}
+enum TransactionLoaderError { unknown }
