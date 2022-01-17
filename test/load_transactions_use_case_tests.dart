@@ -50,8 +50,8 @@ void main() {
         [TransactionStoreSpyMessage.load, TransactionStoreSpyMessage.load]);
   });
 
-  test("test_load_deliversNotFoundErrorOnNotFoundTransaction", () {
-    final expectedError = TransactionLoaderError.notFound;
+  test("test_load_deliversErrorOnLoadTransactionsError", () {
+    final expectedError = TransactionLoaderError.unknown;
     final store = TransactionStoreStub(Result.failure(expectedError));
     final sut = LocalTransactionLoader(store);
     List<TransactionLoaderError> capturedErrors = [];
@@ -63,7 +63,7 @@ void main() {
       capturedErrors.add(error);
     });
 
-    expect(capturedErrors, [ TransactionLoaderError.notFound ]);
+    expect(capturedErrors, [ TransactionLoaderError.unknown ]);
   });
   
   test("test_load_succeedsWithEmptyTransactions", () {
@@ -124,6 +124,5 @@ class TransactionStoreStub implements TransactionStore {
 enum TransactionStoreSpyMessage { load }
 
 enum TransactionLoaderError {
-  notFound,
   unknown
 }
