@@ -16,12 +16,7 @@ class LocalTransactionLoader {
   LocalTransactionLoader(this.store);
 
   Result<List<Transaction>, TransactionLoaderError> load() {
-    Result result = store.loadTransactions();
-    return result.when(success: (transactions) {
-      return Result.success(transactions);
-    } , failure: (error) {
-      return Result.failure(error);
-    });
+    return store.loadTransactions();
   }
 }
 
