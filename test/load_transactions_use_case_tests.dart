@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tuple/tuple.dart';
 
@@ -20,7 +22,7 @@ void main() {
     final tuple = _makeSUT();
     final store = tuple.item2;
 
-    expect(store.requestCallCount, 0);
+    expect(store.messages.isEmpty, true);
   });
 
   test("test_load_requestLoadTransactions", () {
@@ -30,7 +32,7 @@ void main() {
 
     sut.load();
 
-    expect(store.requestCallCount, 1);
+    expect(store.messages, [ TransactionStoreSpyMessage.load ]);
   });
 
   test("test_loadTwice_requestLoadTransactionsTwice", () {
@@ -41,7 +43,7 @@ void main() {
     sut.load();
     sut.load();
 
-    expect(store.requestCallCount, 2);
+    expect(store.messages, [ TransactionStoreSpyMessage.load, TransactionStoreSpyMessage.load ]);
   });
 }
 
@@ -52,10 +54,14 @@ Tuple2<LocalTransactionLoader, TransactionStoreSpy> _makeSUT() {
 }
 
 class TransactionStoreSpy implements TransactionStore {
-  int requestCallCount = 0;
+  List<TransactionStoreSpyMessage> messages = [];
 
   @override
   void loadTransactions() {
-    requestCallCount += 1;
+    messages.add(TransactionStoreSpyMessage.load);
   }
+}
+
+enum TransactionStoreSpyMessage {
+  load
 }
