@@ -1,5 +1,3 @@
-
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:simple_result/simple_result.dart';
 import 'package:tuple/tuple.dart';
@@ -51,8 +49,8 @@ void main() {
   });
 
   test("test_load_deliversErrorOnLoadTransactionsError", () {
-    final expectedError = TransactionLoaderError.unknown;
-    final store = TransactionStoreStub(Result.failure(expectedError));
+    const expectedError = TransactionLoaderError.unknown;
+    final store = TransactionStoreStub(const Result.failure(expectedError));
     final sut = LocalTransactionLoader(store);
     List<TransactionLoaderError> capturedErrors = [];
 
@@ -79,7 +77,7 @@ void main() {
     });
   });
 
-  test("test_load_succedsWithTransactions", () {
+  test("test_load_succeedsWithTransactions", () {
     final expectedTransactions = [Transaction(), Transaction()];
     final store = TransactionStoreStub(Result.success(expectedTransactions));
     final sut = LocalTransactionLoader(store);
@@ -106,7 +104,7 @@ class TransactionStoreSpy implements TransactionStore {
   @override
   Result<List<Transaction>, TransactionLoaderError> loadTransactions() {
     messages.add(TransactionStoreSpyMessage.load);
-    return Result.success([]);
+    return const Result.success([]);
   }
 }
 
