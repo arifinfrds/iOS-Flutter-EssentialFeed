@@ -18,7 +18,7 @@ class LocalTransactionLoader {
   Result<List<Transaction>, TransactionLoaderError> load() {
     Result result = store.loadTransactions();
     return result.when(success: (transactions) {
-      return Result.success([]);
+      return Result.success(transactions);
     } , failure: (error) {
       return Result.failure(error);
     });
@@ -84,6 +84,19 @@ void main() {
     });
   });
 
+  test("test_load_succedsWithTransactions", () {
+    final expectedTransactions = [Transaction(), Transaction()];
+    final store = TransactionStoreStub(Result.success(expectedTransactions));
+    final sut = LocalTransactionLoader(store);
+
+    final result = sut.load();
+
+    result.when(success: (transactions) {
+      expect(transactions, expectedTransactions);
+    }, failure: (error) {
+      assert(false, "Expect to complete with success, got " + error.toString() + "instead.");
+    });
+  });
 }
 
 Tuple2<LocalTransactionLoader, TransactionStoreSpy> _makeSUT() {
