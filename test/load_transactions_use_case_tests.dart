@@ -32,7 +32,7 @@ void main() {
 
     sut.load();
 
-    expect(store.messages, [ TransactionStoreSpyMessage.load ]);
+    expect(store.messages, [TransactionStoreSpyMessage.load]);
   });
 
   test("test_loadTwice_requestLoadTransactionsTwice", () {
@@ -43,7 +43,8 @@ void main() {
     sut.load();
     sut.load();
 
-    expect(store.messages, [ TransactionStoreSpyMessage.load, TransactionStoreSpyMessage.load ]);
+    expect(store.messages,
+        [TransactionStoreSpyMessage.load, TransactionStoreSpyMessage.load]);
   });
 }
 
@@ -62,6 +63,4 @@ class TransactionStoreSpy implements TransactionStore {
   }
 }
 
-enum TransactionStoreSpyMessage {
-  load
-}
+enum TransactionStoreSpyMessage { load }
