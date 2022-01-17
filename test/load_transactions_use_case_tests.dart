@@ -1,10 +1,13 @@
-import 'dart:ffi';
+
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:simple_result/simple_result.dart';
 import 'package:tuple/tuple.dart';
 
+class Transaction { }
+
 abstract class TransactionStore {
-  void loadTransactions();
+  Result<List<Transaction>, TransactionLoaderError> loadTransactions();
 }
 
 class LocalTransactionLoader {
@@ -12,8 +15,13 @@ class LocalTransactionLoader {
 
   LocalTransactionLoader(this.store);
 
-  void load() {
-    store.loadTransactions();
+  Result<List<Transaction>, TransactionLoaderError> load() {
+    Result result = store.loadTransactions();
+    return result.when(success: (transactions) {
+      return Result.success([]);
+    } , failure: (error) {
+      return Result.failure(error);
+    });
   }
 }
 
@@ -46,6 +54,22 @@ void main() {
     expect(store.messages,
         [TransactionStoreSpyMessage.load, TransactionStoreSpyMessage.load]);
   });
+
+  test("test_load_deliversNotFoundErrorOnNotFoundTransaction", () {
+    final expectedError = TransactionLoaderError.notFound;
+    final store = TransactionStoreStub(Result.failure(expectedError));
+    final sut = LocalTransactionLoader(store);
+    List<TransactionLoaderError> capturedErrors = [];
+
+    final result = sut.load();
+    result.when(success: (transactions) {
+      assert(false, "Expect failure, got transactions instead with items: " + transactions.toString());
+    }, failure: (error) {
+      capturedErrors.add(error);
+    });
+
+    expect(capturedErrors, [ TransactionLoaderError.notFound ]);
+  });
 }
 
 Tuple2<LocalTransactionLoader, TransactionStoreSpy> _makeSUT() {
@@ -58,9 +82,33 @@ class TransactionStoreSpy implements TransactionStore {
   List<TransactionStoreSpyMessage> messages = [];
 
   @override
-  void loadTransactions() {
+  Result<List<Transaction>, TransactionLoaderError> loadTransactions() {
     messages.add(TransactionStoreSpyMessage.load);
+    return Result.success([]);
+  }
+}
+
+class TransactionStoreStub implements TransactionStore {
+  Result<List<Transaction>, TransactionLoaderError> _result = Result.success([]);
+
+  TransactionStoreStub(this._result);
+
+  @override
+  Result<List<Transaction>, TransactionLoaderError> loadTransactions() {
+    return _result.when(
+        success: (transactions) {
+          return Result.success(transactions);
+        },
+        failure: (error) {
+          return Result.failure(TransactionLoaderError.notFound);
+        }
+    );
   }
 }
 
 enum TransactionStoreSpyMessage { load }
+
+enum TransactionLoaderError {
+  notFound,
+  unknown
+}
