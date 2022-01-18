@@ -89,6 +89,8 @@ void main() {
   });
 }
 
+// MARK: - Helpers
+
 Tuple2<LocalTransactionLoader, TransactionStoreSpy> _makeSUT() {
   final store = TransactionStoreSpy();
   final sut = LocalTransactionLoader(store);
@@ -104,8 +106,6 @@ class TransactionStoreSpy implements TransactionStore {
     return Future.value(Result.success([]));
   }
 }
-
-// MARK: - Helpers
 
 class TransactionStoreStub implements TransactionStore {
   Result<List<Transaction>, Exception> _result = Result.success([]);
