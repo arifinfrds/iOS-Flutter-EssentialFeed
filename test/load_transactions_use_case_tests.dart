@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:simple_result/simple_result.dart';
 import 'package:tuple/tuple.dart';
@@ -5,7 +7,7 @@ import 'package:tuple/tuple.dart';
 class Transaction {}
 
 abstract class TransactionStore {
-  Result<List<Transaction>, TransactionLoaderError> loadTransactions();
+  Future<Result<List<Transaction>, Exception>> loadTransactions();
 }
 
 class LocalTransactionLoader {
@@ -13,7 +15,7 @@ class LocalTransactionLoader {
 
   LocalTransactionLoader(this.store);
 
-  Result<List<Transaction>, TransactionLoaderError> load() {
+  Future<Result<List<Transaction>, Exception>> load() async {
     return store.loadTransactions();
   }
 }
@@ -47,20 +49,19 @@ void main() {
     expect(store.messages, [TransactionStoreSpyMessage.load, TransactionStoreSpyMessage.load]);
   });
 
-  test("test_load_deliversErrorOnLoadTransactionsError", () {
-    const expectedError = TransactionLoaderError.unknown;
-    final store = TransactionStoreStub(const Result.failure(expectedError));
+  test("test_load_deliversErrorOnLoadTransactionsError", () async {
+    final expectedError = TransactionStoreUnknownException();
+    final store = TransactionStoreStub(Result.failure(expectedError));
     final sut = LocalTransactionLoader(store);
-    List<TransactionLoaderError> capturedErrors = [];
 
     final result = sut.load();
-    result.when(success: (transactions) {
-      assert(false, "Expect failure, got transactions instead with items: " + transactions.toString());
-    }, failure: (error) {
-      capturedErrors.add(error);
+    result
+        .then((value) => () {
+              assert(false, "Expect failure, got : " + value.toString());
+            })
+        .catchError((error) {
+      expect(error, TransactionStoreUnknownException);
     });
-
-    expect(capturedErrors, [TransactionLoaderError.unknown]);
   });
 
   test("test_load_succeedsWithEmptyTransactions", () {
@@ -68,11 +69,16 @@ void main() {
     final sut = LocalTransactionLoader(store);
 
     final result = sut.load();
-
-    result.when(success: (transactions) {
-      expect(transactions.isEmpty, true);
-    }, failure: (error) {
-      assert(false, "Expect to complete with success, got " + error.toString() + "instead.");
+    result
+        .then((value) => () {
+              value.when(success: (transactions) {
+                expect(transactions.isEmpty, true);
+              }, failure: (error) {
+                assert(false, "Expect to complete with success, got " + error.toString() + "instead.");
+              });
+            })
+        .catchError((error) {
+      assert(false, "Expect to complete with success, got " + error + "instead.");
     });
   });
 
@@ -82,11 +88,16 @@ void main() {
     final sut = LocalTransactionLoader(store);
 
     final result = sut.load();
-
-    result.when(success: (transactions) {
-      expect(transactions, expectedTransactions);
-    }, failure: (error) {
-      assert(false, "Expect to complete with success, got " + error.toString() + "instead.");
+    result
+        .then((value) => () {
+              value.when(success: (transactions) {
+                expect(transactions, expectedTransactions);
+              }, failure: (error) {
+                assert(false, "Expect to complete with success, got " + error.toString() + "instead.");
+              });
+            })
+        .catchError((error) {
+      assert(false, "Expect to complete with success, got " + error + "instead.");
     });
   });
 }
@@ -101,23 +112,25 @@ class TransactionStoreSpy implements TransactionStore {
   List<TransactionStoreSpyMessage> messages = [];
 
   @override
-  Result<List<Transaction>, TransactionLoaderError> loadTransactions() {
+  Future<Result<List<Transaction>, Exception>> loadTransactions() {
     messages.add(TransactionStoreSpyMessage.load);
-    return const Result.success([]);
+    return Future.value(null);
   }
 }
 
 class TransactionStoreStub implements TransactionStore {
-  Result<List<Transaction>, TransactionLoaderError> _result = Result.success([]);
+  Result<List<Transaction>, Exception> _result = Result.success([]);
 
   TransactionStoreStub(this._result);
 
   @override
-  Result<List<Transaction>, TransactionLoaderError> loadTransactions() {
-    return _result;
+  Future<Result<List<Transaction>, Exception>> loadTransactions() {
+    return Future.value(_result);
   }
 }
 
 enum TransactionStoreSpyMessage { load }
 
-enum TransactionLoaderError { unknown }
+class TransactionStoreException implements Exception {}
+
+class TransactionStoreUnknownException extends TransactionStoreException {}
