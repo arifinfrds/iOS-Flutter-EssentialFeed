@@ -105,6 +105,8 @@ class TransactionStoreSpy implements TransactionStore {
   }
 }
 
+// MARK: - Helpers
+
 class TransactionStoreStub implements TransactionStore {
   Result<List<Transaction>, Exception> _result = Result.success([]);
 
