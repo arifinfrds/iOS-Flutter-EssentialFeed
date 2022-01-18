@@ -10,6 +10,10 @@ abstract class TransactionStore {
   Future<Result<List<Transaction>, Exception>> loadTransactions();
 }
 
+class TransactionStoreException implements Exception {}
+
+class TransactionStoreUnknownException extends TransactionStoreException {}
+
 class LocalTransactionLoader {
   TransactionStore store;
 
@@ -130,7 +134,3 @@ class TransactionStoreStub implements TransactionStore {
 }
 
 enum TransactionStoreSpyMessage { load }
-
-class TransactionStoreException implements Exception {}
-
-class TransactionStoreUnknownException extends TransactionStoreException {}
