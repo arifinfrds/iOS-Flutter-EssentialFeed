@@ -2,27 +2,10 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:simple_result/simple_result.dart';
+import 'package:transactions/Feature/LocalTransactionLoader.dart';
+import 'package:transactions/Feature/Transaction.dart';
+import 'package:transactions/Store/TransactionStore.dart';
 import 'package:tuple/tuple.dart';
-
-class Transaction {}
-
-abstract class TransactionStore {
-  Future<Result<List<Transaction>, Exception>> loadTransactions();
-}
-
-class TransactionStoreException implements Exception {}
-
-class TransactionStoreUnknownException extends TransactionStoreException {}
-
-class LocalTransactionLoader {
-  TransactionStore store;
-
-  LocalTransactionLoader(this.store);
-
-  Future<Result<List<Transaction>, Exception>> load() async {
-    return store.loadTransactions();
-  }
-}
 
 void main() {
   test("test_init_doesNotLoadAnyTransactions", () {
