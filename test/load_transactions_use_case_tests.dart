@@ -114,7 +114,7 @@ class TransactionStoreSpy implements TransactionStore {
   @override
   Future<Result<List<Transaction>, Exception>> loadTransactions() {
     messages.add(TransactionStoreSpyMessage.load);
-    return Future.value(null);
+    return Future.value(Result.success([]));
   }
 }
 
